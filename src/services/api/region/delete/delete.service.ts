@@ -1,0 +1,10 @@
+import { axiosClient } from "@/lib/axios";
+
+export const deleteRegion = async ({ id }: { id: string }) => {
+  try {
+    const response = await axiosClient.delete(`/secure/region/${id}`);
+    return response.data;
+  } catch (error: any) {
+    throw error
+  }
+};
