@@ -2,26 +2,26 @@ import { axiosClient } from "@/lib/axios";
 import { ResponseAllBodyWorm, ResponseDetailBodyWorm } from "@/types/BodyWorm/TypeBodyWorm";
 
 export const getAllBodyWorm = async () => {
-  const response = await axiosClient.get<ResponseAllBodyWorm>("/secure/body-worm");
+  const response = await axiosClient.get<ResponseAllBodyWorm>("/electron/body-worm");
   return response.data;
 };
 
 export const getRamdomBodyWorm = async (limit: number) => {
-  const response = await axiosClient.get<ResponseAllBodyWorm>("/secure/body-worm/random?limit=" + limit);
+  const response = await axiosClient.get<ResponseAllBodyWorm>("/electron/body-worm/random?limit=" + limit);
   return response.data;
 };
 
 export const getDetailBodyWorm = async (id: string) => {
-  const response = await axiosClient.get<ResponseDetailBodyWorm>(`/secure/body-worm/${id}`);
+  const response = await axiosClient.get<ResponseDetailBodyWorm>(`/electron/body-worm/${id}`);
   return response.data;
 };
 
 export const checkPathSlugBodyWorm = async (path_slug: string, id?: string) => {
-  const response = await axiosClient.post(`/secure/body-worm/check-path-slug`, { path_slug: path_slug, id: id });
+  const response = await axiosClient.post(`/electron/body-worm/check-path-slug`, { path_slug: path_slug, id: id });
   return response.data;
 };
 
 export const getStarBodyWorm = async () => {
-  const response = await axiosClient.get<ResponseAllBodyWorm>("/secure/body-worm/star");
+  const response = await axiosClient.get<ResponseAllBodyWorm>("/electron/body-worm/star");
   return response.data;
 };

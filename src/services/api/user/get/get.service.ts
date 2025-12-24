@@ -2,7 +2,7 @@ import { axiosClient } from "@/lib/axios";
 import { ResponseAllUser, ResponseDetailUser } from "@/types/User/TypeUser";
 
 export const getAllUser = async () => {
-  const response = await axiosClient.get<ResponseAllUser>("/secure/user");
+  const response = await axiosClient.get<ResponseAllUser>("/electron/user");
   return response.data;
 };
 

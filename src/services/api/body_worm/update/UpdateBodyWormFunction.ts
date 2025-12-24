@@ -10,7 +10,7 @@ export const UpdateBodyWormFunction = async ({
 }) => {
   try {
     const response = await axiosClient.put<BodyWormResponse>(
-      `/secure/body-worm/${id}`,
+      `/electron/body-worm/${id}`,
       data
     );
     return response;

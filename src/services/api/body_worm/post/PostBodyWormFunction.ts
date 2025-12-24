@@ -4,7 +4,7 @@ import { BodyWormRequest, BodyWormResponse } from "@/types/BodyWorm/TypeBodyWorm
 export const PostBodyWormFunction = async (data: BodyWormRequest) => {
   try {
     const response = await axiosClient.post<BodyWormResponse>(
-      `/secure/body-worm`,
+      `/electron/body-worm`,
       data
     );
     return response;

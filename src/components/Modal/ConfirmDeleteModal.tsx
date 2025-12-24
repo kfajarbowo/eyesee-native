@@ -1,83 +1,103 @@
+// Delete Confirmation Modal - updated for native app
 import { useState } from "react";
-import {
-  isConfirmDeleteAtom,
-  paramsDeleteAtom,
-  statusDeleteAtom,
-} from "@/common/module/SettingsJotai";
-import { useAtom } from "jotai";
+import { AlertTriangle } from "lucide-react";
 import { toast } from "react-toastify";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
 
-export default function ConfirmDeleteModal({ hooks, refetch = () => {} }: any) {
-  const { mutate } = hooks;
-  const [isConfirmDelete, setIsConfirmDelete] = useAtom(isConfirmDeleteAtom);
-  const [, setStatusDelete] = useAtom(statusDeleteAtom);
-  const [paramsDelete] = useAtom(paramsDeleteAtom);
-  const [isLoading, setIsLoading] = useState(false);
+interface ConfirmDeleteModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => Promise<void> | void;
+  isLoading?: boolean;
+  title?: string;
+  message?: string;
+}
 
-  const onConfirm = () => {
-    setIsLoading(true); // Aktifkan loading
-    mutate(paramsDelete, {
-      onSuccess: () => {
-        setIsLoading(false);
-        setIsConfirmDelete(false);
-        setStatusDelete(true);
-        refetch();
-        toast.success("Berhasil dihapus");
-      },
-      onError: () => {
-        setIsLoading(false);
-        setIsConfirmDelete(false);
-        setStatusDelete(false);
-        toast.error("Maaf data tidak dapat dihapus");
-      },
-    });
-  };
+export default function ConfirmDeleteModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  isLoading = false,
+  title = "Are you sure?",
+  message = "You won't be able to revert this!",
+}: ConfirmDeleteModalProps) {
+  if (!isOpen) return null;
 
-  const handleClose = () => {
-    if (!isLoading) setIsConfirmDelete(false);
+  const handleConfirm = async () => {
+    try {
+      await onConfirm();
+    } catch (error) {
+      // Error handling is done in parent component
+    }
   };
 
   return (
-    <>
-      <input
-        type="checkbox"
-        id="confirm-modal"
-        className="modal-toggle"
-        checked={isConfirmDelete}
-        onChange={(e) => setIsConfirmDelete(e.target.checked)}
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/50"
+        onClick={() => !isLoading && onClose()}
       />
-      <div className="modal" role="dialog">
-        <div className="modal-box bg-white">
-          <div className="flex justify-center mb-4">
-            <HiOutlineExclamationCircle className="text-warning text-6xl" />
-          </div>
-          <h2 className="text-2xl font-semibold mb-2 text-center text-slate-600">
-            Are you sure?
-          </h2>
-          <p className="text-gray-500 mb-6 text-center">
-            You won&apos;t t be able to revert this!
-          </p>
-          <div className="flex justify-center gap-4">
-            <button
-              className={`btn  ${
-                isLoading ? "btn-disabled loading" : ""
-              }`}
-              onClick={onConfirm}
-              disabled={isLoading}
-            >
-              {isLoading ? "Deleting..." : "Yes, delete it!"}
-            </button>
-            <label
-              htmlFor="confirm-modal"
-              className={`btn btn-error ${isLoading ? "btn-disabled" : ""}`}
-              onClick={handleClose}
-            >
-              Close!
-            </label>
+      
+      {/* Modal */}
+      <div className="relative bg-card rounded-xl border border-border p-6 w-full max-w-md mx-4 shadow-xl">
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center">
+            <AlertTriangle className="w-8 h-8 text-yellow-600" />
           </div>
         </div>
+        
+        <h2 className="text-xl font-semibold mb-2 text-center text-foreground">
+          {title}
+        </h2>
+        <p className="text-muted-foreground mb-6 text-center">
+          {message}
+        </p>
+        
+        <div className="flex justify-center gap-3">
+          <button
+            className={`btn ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+            onClick={handleConfirm}
+            disabled={isLoading}
+          >
+            {isLoading ? "Deleting..." : "Yes, delete it!"}
+          </button>
+          <button
+            className={`btn btn-danger ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+            onClick={onClose}
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
-    </>
+    </div>
   );
+}
+
+// Hook for managing delete state
+export function useDeleteModal() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const openModal = (id: string) => {
+    setDeleteId(id);
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    if (!isLoading) {
+      setIsOpen(false);
+      setDeleteId(null);
+    }
+  };
+
+  return {
+    isOpen,
+    deleteId,
+    isLoading,
+    setIsLoading,
+    openModal,
+    closeModal,
+  };
 }

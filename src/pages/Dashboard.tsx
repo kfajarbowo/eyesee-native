@@ -41,20 +41,23 @@ export default function Dashboard() {
       const rawLayout = dataLayout?.data?.layout?.layout;
       const layoutArray = Array.isArray(rawLayout) ? rawLayout : [];
 
+      // Filter only CCTV cameras (type === 1)
+      const cctvCameras = data.data.filter((cctv: Cctv) => cctv.type === 1);
+
       let generatedLayout;
       
       if (layoutArray.length > 0) {
     
         generatedLayout = layoutArray
-          .filter((item) => data.data.some((cctv: Cctv) => cctv.path_slug === item.i))
+          .filter((item) => cctvCameras.some((cctv: Cctv) => cctv.path_slug === item.i))
           .map((item) => {
-            const matchedCctv = data.data.find((cctv: Cctv) => cctv.path_slug === item.i);
+            const matchedCctv = cctvCameras.find((cctv: Cctv) => cctv.path_slug === item.i);
             item.data = matchedCctv!;
             return item;
           });
       } else {
     
-        generatedLayout = data.data.map((cctv: Cctv, index: number) => ({
+        generatedLayout = cctvCameras.map((cctv: Cctv, index: number) => ({
           i: cctv.path_slug,
           x: (index % 3) * 4, // 3 columns
           y: Math.floor(index / 3) * 3, // 3 rows per column

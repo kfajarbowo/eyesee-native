@@ -10,7 +10,7 @@ export const UpdateHelmetFunction = async ({
 }) => {
   try {
     const response = await axiosClient.put<HelmetResponse>(
-      `/secure/helmet/${id}`,
+      `/electron/helmet/${id}`,
       data
     );
     return response;

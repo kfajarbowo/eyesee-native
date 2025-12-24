@@ -11,6 +11,9 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       webSecurity: false, // Disable CORS for API calls
+      webviewTag: true, // Enable webview/iframe
+      allowRunningInsecureContent: true, // Allow HTTP content in HTTPS
+      sandbox: false, // Disable sandbox for localhost access
       preload: path.join(__dirname, 'preload.cjs'),
     },
   });
@@ -26,6 +29,24 @@ function createWindow() {
     // In production, load the built files
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
   }
+
+  // Allow all iframe sources and media content
+  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': ['default-src * \'unsafe-inline\' \'unsafe-eval\'; script-src * \'unsafe-inline\' \'unsafe-eval\'; connect-src * \'unsafe-inline\'; img-src * data: blob: \'unsafe-inline\'; frame-src *; style-src * \'unsafe-inline\';']
+      }
+    });
+  });
+
+  // Allow opening MediaMTX streams
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.includes(':8889') || url.includes(':9997')) {
+      return { action: 'allow' };
+    }
+    return { action: 'deny' };
+  });
 
   mainWindow.on('closed', function () {
     mainWindow = null;

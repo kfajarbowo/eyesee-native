@@ -2,7 +2,7 @@ import { axiosClient } from "@/lib/axios";
 import { ResponseAllRole, ResponseDetailRole } from "@/types/Role/TypeRole";
 
 export const getAllRole = async () => {
-  const response = await axiosClient.get<ResponseAllRole>("/secure/role");
+  const response = await axiosClient.get<ResponseAllRole>("/electron/role");
   return response.data;
 };
 

@@ -10,6 +10,11 @@ export type Cctv = {
   region_id: string;
   status: boolean;
   star: boolean;
+  type: number; // 1=CCTV, 2=Helmet, 3=Body-Worm
+  regions?: {
+    id: number;
+    name: string;
+  };
 };
 
 export type ResponseAllCctv = {
